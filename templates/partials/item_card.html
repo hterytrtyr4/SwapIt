@@ -1,0 +1,37 @@
+{% macro item_card(item, current_user=None) -%}
+<article class="item-card">
+  <div class="item-media">
+    <a href="{{ url_for('marketplace.item_detail', item_id=item.id) }}" aria-label="View {{ item.title }}">
+      <img src="{{ item.image_url }}" alt="{{ item.title }}" loading="lazy">
+    </a>
+    <div class="media-badges">
+      <span class="badge-soft badge-category">{{ item.category }}</span>
+      <span class="badge-soft badge-condition">{{ item.condition }}</span>
+    </div>
+    <span class="badge-soft badge-{{ item.status }} media-status">
+      <i class="bi bi-check-circle"></i>{{ item.status_label }}
+    </span>
+  </div>
+  <div class="item-body">
+    <h3 class="item-title">
+      <a href="{{ url_for('marketplace.item_detail', item_id=item.id) }}" class="text-reset">{{ item.title }}</a>
+    </h3>
+    <p class="item-desc">{{ item.description|truncate(95) }}</p>
+
+    <div class="wanted-chip">
+      <i class="bi bi-arrow-left-right"></i>
+      <div>Wants: <strong>{{ item.wanted_item|truncate(55) }}</strong></div>
+    </div>
+
+    <div class="item-meta">
+      <div class="owner-line">
+        <span class="avatar sm avatar-soft">{{ item.user.initials }}</span>
+        <div class="text-clamp-1"><strong>{{ item.user.name }}</strong></div>
+      </div>
+      <a href="{{ url_for('marketplace.item_detail', item_id=item.id) }}" class="btn btn-soft btn-sm ms-auto">
+        View<span class="d-none d-sm-inline"> details</span> <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</article>
+{%- endmacro %}

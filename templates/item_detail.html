@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.title }} - SwapIt{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <p class="section-eyebrow mb-1">
+      <a href="{{ url_for('marketplace.marketplace') }}" class="text-muted-2">Marketplace</a>
+      <i class="bi bi-chevron-right mx-1" style="font-size: .7em;"></i>{{ item.category }}
+    </p>
+    <h1 class="h2 mb-0">{{ item.title }}</h1>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-5">
+    <!-- Image -->
+    <div class="col-lg-6">
+      <div class="detail-media">
+        <img src="{{ item.image_url }}" alt="{{ item.title }}">
+        <span class="badge-soft badge-{{ item.status }}"><i class="bi bi-check-circle"></i>{{ item.status_label }}</span>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="col-lg-6">
+      <div class="d-flex flex-wrap gap-2 mb-2">
+        <span class="badge-soft badge-category"><i class="bi bi-bookmark"></i>{{ item.category }}</span>
+        <span class="badge-soft badge-condition"><i class="bi bi-stars"></i>{{ item.condition }}</span>
+        {% if suggested_score %}
+        <span class="badge-soft badge-accepted"><i class="bi bi-lightning-charge-fill"></i>{{ suggested_score }}% match with your items</span>
+        {% endif %}
+      </div>
+
+      <p class="detail-desc">{{ item.description }}</p>
+
+      <div class="detail-block">
+        <div class="label"><i class="bi bi-arrow-left-right me-1"></i>Wants in exchange</div>
+        <div class="value">{{ item.wanted_item }}</div>
+      </div>
+
+      {% if item.notes %}
+      <div class="detail-block">
+        <div class="label"><i class="bi bi-journal-text me-1"></i>Notes</div>
+        <div class="value" style="font-weight: 400;">{{ item.notes }}</div>
+      </div>
+      {% endif %}
+
+      <div class="owner-card">
+        <span class="avatar lg avatar-soft">{{ item.user.initials }}</span>
+        <div>
+          <div class="fw-600">{{ item.user.name }}</div>
+          <div class="text-muted-2 fs-14">
+            {% if item.user.college_name %}{{ item.user.college_name }} · {% endif %}
+            Listed {{ item.created_at.strftime('%b %d, %Y') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex flex-wrap align-items-center gap-2 detail-actions">
+        {% if current_user.is_authenticated %}
+          {% if item.user_id == current_user.id %}
+            <a href="{{ url_for('items.edit_item', item_id=item.id) }}" class="btn btn-primary">
+              <i class="bi bi-pencil me-2"></i>Edit listing
+            </a>
+            <form method="POST" action="{{ url_for('items.delete_item', item_id=item.id) }}"
+                  class="js-confirm-delete d-inline" data-confirm="Delete this listing permanently?">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-danger-soft">
+                <i class="bi bi-trash me-2"></i>Delete
+              </button>
+            </form>
+          {% elif item.status == 'available' %}
+            <a href="{{ url_for('swaps.new_request', item_id=item.id) }}" class="btn btn-primary">
+              <i class="bi bi-arrow-left-right me-2"></i>Request a Swap
+            </a>
+            {% if best_own_item %}
+            <span class="detail-hint">
+              <i class="bi bi-lightbulb"></i>Best fit from your shelf: <strong class="text-ink">{{ best_own_item.title }}</strong>
+            </span>
+            {% endif %}
+          {% else %}
+            <button class="btn btn-primary" disabled>
+              <i class="bi bi-hourglass-split me-2"></i>{{ item.status_label }}
+            </button>
+            <span class="detail-hint"><i class="bi bi-info-circle"></i>This item is currently {{ item.status }}.</span>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-primary">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Log in to request a swap
+          </a>
+          <span class="detail-hint"><i class="bi bi-info-circle"></i>Swapping requires a free account.</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

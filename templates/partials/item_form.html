@@ -1,0 +1,85 @@
+{# Shared add/edit item form. Expects: categories, conditions, form_data, [item], action_url, submit_label #}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="form-card">
+      <div class="mb-3">
+        <label for="title" class="form-label">Item Title *</label>
+        <input type="text" class="form-control" id="title" name="title"
+               maxlength="120" required placeholder="e.g. Physics II Textbook"
+               value="{{ form_data.get('title', '') }}">
+        <div class="form-text">3-120 characters. Be specific.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description *</label>
+        <textarea class="form-control" id="description" name="description" rows="5"
+                  required minlength="10" placeholder="Describe the condition, edition, any defects, why you are swapping it...">{{ form_data.get('description', '') }}</textarea>
+        <div class="form-text">At least 10 characters. Honest descriptions get more swaps.</div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="category" class="form-label">Category *</label>
+          <select class="form-select" id="category" name="category" required>
+            <option value="" disabled {% if not form_data.get('category') %}selected{% endif %}>Choose a category</option>
+            {% for c in categories %}
+            <option value="{{ c }}" {% if form_data.get('category') == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="condition" class="form-label">Condition *</label>
+          <select class="form-select" id="condition" name="condition" required>
+            <option value="" disabled {% if not form_data.get('condition') %}selected{% endif %}>Choose condition</option>
+            {% for c in conditions %}
+            <option value="{{ c }}" {% if form_data.get('condition') == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="wanted_item" class="form-label">What do you want in exchange? *</label>
+        <input type="text" class="form-control" id="wanted_item" name="wanted_item"
+               maxlength="160" required placeholder="e.g. Chemistry book, scientific calculator, Bluetooth speaker"
+               value="{{ form_data.get('wanted_item', '') }}">
+        <div class="form-text">This powers smart matching - the engine compares this with other listings' titles and descriptions.</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="notes" class="form-label">Additional Notes</label>
+        <textarea class="form-control" id="notes" name="notes" rows="2"
+                  maxlength="500" placeholder="Pickup location, preferred timings, anything else...">{{ form_data.get('notes', '') }}</textarea>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check2-circle me-1"></i>{{ submit_label }}
+        </button>
+        <a href="{{ action_url }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="upload-card">
+      <label for="image" class="form-label">Item Photo {% if not item %}*{% endif %}</label>
+      {% if item %}
+      <div class="mb-2">
+        <img src="{{ item.image_url }}" alt="Current photo" class="upload-thumb mb-2">
+        <div class="text-muted-2 fs-13">Current photo - uploading a new one replaces it.</div>
+      </div>
+      {% endif %}
+      <input type="file" class="form-control" id="image" name="image"
+             accept="image/png,image/jpeg,image/gif,image/webp" {% if not item %}required{% endif %}>
+      <div class="si-upload-preview d-none mt-3">
+        <img id="imagePreview" src="" alt="Preview" class="upload-thumb">
+      </div>
+      <div class="upload-rules">
+        <span><i class="bi bi-check-circle-fill me-1"></i>Max file size: 5 MB</span>
+        <span><i class="bi bi-check-circle-fill me-1"></i>Allowed: PNG, JPG, JPEG, GIF, WEBP</span>
+        <span><i class="bi bi-check-circle-fill me-1"></i>Images are resized &amp; stripped of metadata</span>
+      </div>
+    </div>
+  </div>
+</div>

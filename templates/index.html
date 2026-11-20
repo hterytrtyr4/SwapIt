@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% from 'partials/item_card.html' import item_card %}
+
+{% block title %}SwapIt - Don't Buy It. Swap It.{% endblock %}
+
+{% block content %}
+<!-- ============================== HERO ============================== -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="hero-eyebrow">
+          <i class="bi bi-stars"></i> Peer-to-peer barter marketplace
+        </span>
+        <h1 class="hero-title">
+          Don't Buy It.<br><span class="grad">Swap It.</span>
+        </h1>
+        <p class="hero-sub">
+          Give your unused items a new life. Find what you need through simple exchanges -
+          no money, no middlemen, no waste.
+        </p>
+        <div class="hero-actions">
+          <a href="{{ url_for('marketplace.marketplace') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-grid-3x3-gap me-2"></i>Explore Marketplace
+          </a>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('items.add_item') }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-arrow-left-right me-2"></i>Start Swapping
+          </a>
+          {% else %}
+          <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-arrow-left-right me-2"></i>Start Swapping
+          </a>
+          {% endif %}
+        </div>
+        <div class="hero-proof">
+          <div class="avatars">
+            <span class="avatar sm avatar-soft">AK</span>
+            <span class="avatar sm" style="background:linear-gradient(135deg,#0f9d70,#0b7c58);">RS</span>
+            <span class="avatar sm" style="background:linear-gradient(135deg,#f0932b,#d97b0f);">MP</span>
+            <span class="avatar sm" style="background:linear-gradient(135deg,#2f6fed,#1d4fc4);">TN</span>
+          </div>
+          <div class="fs-14 text-muted-2">
+            <strong class="text-ink">{{ member_count }}</strong> members ·
+            <strong class="text-ink">{{ open_count }}</strong> items open for swaps ·
+            <strong class="text-ink">{{ completed_count }}</strong> exchanges completed
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="swap-visual">
+          <div class="swap-card">
+            <div class="thumb">
+              <img src="{{ url_for('static', filename='img/placeholders/electronics.svg') }}" alt="Scientific calculator">
+            </div>
+            <div class="meta">
+              <div class="t">Scientific Calculator</div>
+              <div class="s">Electronics · Good condition</div>
+            </div>
+            <span class="badge-soft badge-available ms-auto"><i class="bi bi-check-circle"></i>Available</span>
+          </div>
+
+          <div class="swap-connector">
+            <span class="line"></span>
+            <span><i class="bi bi-arrow-left-right me-1"></i>mutual match</span>
+            <span class="line"></span>
+          </div>
+
+          <div class="swap-card">
+            <span class="match-pill"><i class="bi bi-lightning-charge-fill"></i> 96% match</span>
+            <div class="thumb">
+              <img src="{{ url_for('static', filename='img/placeholders/books.svg') }}" alt="Engineering mathematics book">
+            </div>
+            <div class="meta">
+              <div class="t">Engineering Maths (3rd Ed.)</div>
+              <div class="s">Books · Like new</div>
+            </div>
+            <span class="badge-soft badge-available ms-auto"><i class="bi bi-check-circle"></i>Available</span>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-center flex-wrap mt-3">
+            <span class="float-chip"><i class="bi bi-shield-check"></i> No payment, ever</span>
+            <span class="float-chip"><i class="bi bi-people"></i> Students near you</span>
+            <span class="float-chip"><i class="bi bi-lightning-charge"></i> Instant matching</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="section-eyebrow">How it works</p>
+      <h2 class="section-title">Three steps to your next swap</h2>
+      <p class="section-sub mx-auto mt-2">
+        List what you have, tell SwapIt what you want, and let the matching engine
+        do the searching for you.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="step-card">
+          <span class="step-num">01</span>
+          <div class="step-icon"><i class="bi bi-box-seam"></i></div>
+          <h5 class="mb-2">List your item</h5>
+          <p class="text-muted-2 mb-3 fs-15">
+            Add a photo, category and condition, then say exactly what you'd like in return.
+            It takes under a minute.
+          </p>
+          <span class="badge-soft badge-available"><i class="bi bi-image"></i>Photo + details</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card">
+          <span class="step-num">02</span>
+          <div class="step-icon"><i class="bi bi-magic"></i></div>
+          <h5 class="mb-2">Get matched</h5>
+          <p class="text-muted-2 mb-3 fs-15">
+            Our matching engine scores every listing against your wants and highlights
+            members who want what you're offering.
+          </p>
+          <span class="badge-soft badge-accepted"><i class="bi bi-percent"></i>Match score 0-100</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card">
+          <span class="step-num">03</span>
+          <div class="step-icon"><i class="bi bi-arrow-left-right"></i></div>
+          <h5 class="mb-2">Request &amp; swap</h5>
+          <p class="text-muted-2 mb-3 fs-15">
+            Send a swap request, get it accepted, meet up, and mark the exchange complete.
+            Both items are locked while the swap is live.
+          </p>
+          <span class="badge-soft badge-swapped"><i class="bi bi-handshake"></i>Peer to peer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FEATURED ITEMS ============================ -->
+<section class="section-sm">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <p class="section-eyebrow mb-1">Fresh on SwapIt</p>
+        <h2 class="section-title mb-0">Featured items</h2>
+        <p class="text-muted-2 mb-0 mt-1 fs-15">Real listings from the community, ready to trade.</p>
+      </div>
+      <a href="{{ url_for('marketplace.marketplace') }}" class="btn btn-outline-primary">
+        Browse all items <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    {% if featured %}
+    <div class="row g-4">
+      {% for item in featured %}
+      <div class="col-sm-6 col-lg-4">
+        {{ item_card(item, current_user) }}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="icon"><i class="bi bi-box-seam"></i></div>
+      <h5>No items yet - be the first!</h5>
+      <p>The marketplace is brand new. List something you no longer need and it will show up right here.</p>
+      <a href="{{ url_for('items.add_item') if current_user.is_authenticated else url_for('auth.register') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>List the first item
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============================== BENEFITS ============================== -->
+<section class="section" id="benefits">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <p class="section-eyebrow">Why SwapIt</p>
+        <h2 class="section-title">Bartering that actually works</h2>
+        <p class="text-muted-2 lh-relaxed mt-3">
+          Students accumulate things they use once: a calculator for one semester,
+          a textbook for one paper, a racket for one season. SwapIt turns that
+          shelf clutter into something useful for someone else - and gets you what you need
+          without spending a rupee.
+        </p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="{{ url_for('marketplace.marketplace') }}" class="btn btn-primary">
+            <i class="bi bi-search me-2"></i>Find a swap
+          </a>
+          <a href="#how-it-works" class="btn btn-ghost">Learn more</a>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-wallet2"></i></div>
+              <h6 class="mb-1">Zero cost</h6>
+              <p class="text-muted-2 fs-14 mb-0">No prices, no fees, no payment details. Ever.</p>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="benefit-card green">
+              <div class="benefit-icon"><i class="bi bi-recycle"></i></div>
+              <h6 class="mb-1">Sustainable by design</h6>
+              <p class="text-muted-2 fs-14 mb-0">Every swap keeps one more item out of a landfill.</p>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="benefit-card blue">
+              <div class="benefit-icon"><i class="bi bi-magic"></i></div>
+              <h6 class="mb-1">Smart matching</h6>
+              <p class="text-muted-2 fs-14 mb-0">A Python engine compares your wants with real listings.</p>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="benefit-card amber">
+              <div class="benefit-icon"><i class="bi bi-shield-check"></i></div>
+              <h6 class="mb-1">Accountable swaps</h6>
+              <p class="text-muted-2 fs-14 mb-0">Statuses, locks and history for every exchange.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-strip mt-5">
+      <div class="row text-center g-4 position-relative">
+        <div class="col-6 col-lg-3">
+          <div class="num">{{ open_count }}</div>
+          <div class="lbl">Items open for swap</div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="num">{{ member_count }}</div>
+          <div class="lbl">Community members</div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="num">{{ completed_count }}</div>
+          <div class="lbl">Swaps completed</div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="num">{{ category_count }}</div>
+          <div class="lbl">Categories to explore</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ CTA ================================ -->
+<section class="section-sm pb-5">
+  <div class="container">
+    <div class="surface-pad text-center" style="border-radius: var(--radius-xl); background: linear-gradient(135deg,#faf7ff,#f0e8ff); border: 1px solid var(--line);">
+      <span class="brand-mark lg mx-auto mb-3"><i class="bi bi-arrow-left-right"></i></span>
+      <h2 class="section-title mb-2">Your unused stuff is someone's wishlist</h2>
+      <p class="text-muted-2 mb-4 mx-auto" style="max-width: 32rem;">
+        Join SwapIt, list your first item and see who wants it. It's free, and it always will be.
+      </p>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('items.add_item') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle me-2"></i>List an item now
+      </a>
+      {% else %}
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-person-plus me-2"></i>Create your free account
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

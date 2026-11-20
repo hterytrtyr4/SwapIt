@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Upload too large{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="container text-center">
+    <div class="error-code">413</div>
+    <h1 class="auth-title">Upload too large</h1>
+    <p class="auth-sub mx-auto" style="max-width: 460px;">That file exceeds the 5 MB upload limit. Please compress the image and try again.</p>
+    <a href="{{ url_for('marketplace.index') }}" class="btn btn-primary btn-lg px-4">
+      <i class="bi bi-house me-2"></i>Back to home
+    </a>
+  </div>
+</section>
+{% endblock %}
