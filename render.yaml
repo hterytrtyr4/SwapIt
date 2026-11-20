@@ -1,0 +1,35 @@
+# Render blueprint for SwapIt — https://render.com/docs/blueprint-spec
+#
+# Deploy: Render dashboard → New → Blueprint → pick this repository.
+# Then set SECRET_KEY (and DATABASE_URL, for persistence) in the dashboard or
+# via the `sync: false` prompts below.
+services:
+  - type: web
+    name: swapit
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 60
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: FLASK_CONFIG
+        value: production
+      - key: SECRET_KEY
+        generateValue: true # Render generates a strong random value once
+      # Postgres URI (Render Postgres, Neon, Supabase…). Prompted at deploy time.
+      # Without it the app falls back to SQLite on the ephemeral disk.
+      - key: DATABASE_URL
+        sync: false
+      # Images must live in the DB when the disk is ephemeral.
+      - key: MEDIA_BACKEND
+        value: db
+      - key: SESSION_COOKIE_SECURE
+        value: "1"
+      - key: AUTO_CREATE_DB
+        value: "1"
+      - key: MAX_UPLOAD_MB
+        value: "4"

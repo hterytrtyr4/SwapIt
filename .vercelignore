@@ -1,0 +1,27 @@
+# Keep the serverless bundle small — Vercel only needs the app, templates,
+# static assets and requirements.txt.
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Local runtime data (never ship a developer's database or uploads)
+instance/
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Tests and docs are not needed at runtime
+tests/
+*.md
+!README.md
+
+# Local tooling
+.DS_Store
+.vscode/
+.idea/
+Makefile

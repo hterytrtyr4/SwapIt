@@ -1,5 +1,11 @@
 # SwapIt — Exchange, Don't Purchase
 
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-SQLAlchemy-003B57?logo=sqlite&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-35%20passing-brightgreen)
+
 **SwapIt** is a peer-to-peer barter marketplace where people exchange items they no
 longer need for things they do — **no money, ever**. List an item, browse what others
 are offering, get smart *potential-match* suggestions, send swap requests, and track
@@ -7,6 +13,10 @@ every exchange from request to completion.
 
 Built as a lightweight, fully self-contained Flask application: Python + SQLite +
 Bootstrap 5, no paid APIs, no external services, no build step.
+
+**New here?** `make dev` starts a seeded demo in one command — see
+[DEMO.md](DEMO.md) for the click-through script. Deployment is covered in
+[DEPLOY.md](DEPLOY.md).
 
 ---
 
@@ -53,9 +63,18 @@ SwapIt/
 ├── matching.py            # Smart swap matching engine (0-100 potential match scores)
 ├── seed_demo.py           # Optional demo data seeder (never runs automatically)
 ├── requirements.txt       # Production dependencies (incl. gunicorn)
-├── README.md
+├── Makefile               # install / run / dev / test / seed / reset / check / health / clean
+├── Procfile               # gunicorn start command (Render, Heroku-style hosts)
+├── render.yaml            # Render blueprint (free web service)
+├── vercel.json            # Vercel serverless routing + bundled templates/static
+├── api/index.py           # Vercel WSGI entry point
+├── README.md              # This file
+├── DEMO.md                # 3-minute demo script + demo accounts
+├── DEPLOY.md              # Deploy walkthrough + troubleshooting table
+├── VIVA_SCRIPT.md         # Walkthrough notes for a viva / review
 ├── .env.example           # Environment variable template
 ├── .gitignore
+├── .vercelignore          # Trims the serverless bundle
 │
 ├── routes/
 │   ├── __init__.py
@@ -92,6 +111,30 @@ SwapIt/
 
 ## 4. Run locally
 
+### Quick start (one command)
+
+```bash
+make dev        # creates .venv, installs deps, seeds demo data, starts the server
+# → http://127.0.0.1:5000
+```
+
+| Command | What it does |
+| --- | --- |
+| `make` | list every target |
+| `make install` | create `.venv/` and install `requirements.txt` |
+| `make run` | start the dev server (`HOST`/`PORT` overridable) |
+| `make dev` | `install` + `seed` + `run` — the first-time path |
+| `make test` | run the 35-test suite verbosely |
+| `make seed` | load demo users, listings and swaps |
+| `make reset` | wipe the local DB + uploads, then reseed |
+| `make check` | compile-check sources, print versions |
+| `make health` | curl the running server |
+| `make clean` | remove caches and test artifacts |
+
+No `make` on Windows? Use `python -m venv .venv` then the manual steps below.
+
+### Manual steps
+
 ```bash
 # 1. Get the code and enter the project
 cd SwapIt
@@ -118,6 +161,9 @@ python seed_demo.py
 # demo accounts: aarav@demo.swapit / priya@demo.swapit / rohan@demo.swapit
 # password for all: password123
 ```
+
+Then follow [DEMO.md](DEMO.md) for a guided tour of what to click and why it
+matters (the calculator ↔ textbook match is the highlight).
 
 ### Run the test-suite
 
@@ -152,6 +198,9 @@ python -c "import secrets; print(secrets.token_hex(32))"
 ---
 
 ## 6. Deployment (free tier)
+
+> Full walkthrough, environment matrix and a troubleshooting table live in
+> [DEPLOY.md](DEPLOY.md). This section is the summary.
 
 SwapIt deploys as a single serverless WSGI app. The supported free-tier path is
 **Vercel (app) + Supabase Postgres (database)**; Render remains a valid
@@ -292,7 +341,18 @@ tokens, image upload, and dashboard stat rendering.
 
 ---
 
-## 10. License
+## 10. Documentation map
+
+| Doc | Read it for |
+| --- | --- |
+| [README.md](README.md) | features, structure, local setup, env vars, how matching works |
+| [DEMO.md](DEMO.md) | the 3-minute demo script, demo accounts, resettable seed data |
+| [DEPLOY.md](DEPLOY.md) | Vercel + Supabase, Render, Docker, troubleshooting |
+| [VIVA_SCRIPT.md](VIVA_SCRIPT.md) | answer-by-answer notes for a project viva |
+
+---
+
+## 11. License
 
 Built with free and open-source technologies (Flask, Bootstrap, Pillow, SQLite).
 Use, modify and learn from it freely.
