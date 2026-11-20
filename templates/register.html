@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Create account - SwapIt{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-6">
+        <div class="auth-card">
+          <div class="auth-icon"><i class="bi bi-person-plus"></i></div>
+          <h1 class="auth-title">Create your account</h1>
+          <p class="auth-sub">Join the campus barter network - free, forever.</p>
+
+          <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="mb-3">
+              <label for="name" class="form-label">Full name</label>
+              <input type="text" class="form-control" id="name" name="name"
+                     required minlength="2" maxlength="100" placeholder="e.g. Priya Sharma"
+                     value="{{ form_data.get('name', '') }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email" name="email"
+                     required placeholder="you@example.com" value="{{ form_data.get('email', '') }}">
+              <div class="form-text">We'll never share your email.</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       required minlength="8" placeholder="At least 8 characters">
+              </div>
+              <div class="col-md-6">
+                <label for="confirm_password" class="form-label">Confirm password</label>
+                <input type="password" class="form-control" id="confirm_password"
+                       name="confirm_password" required placeholder="Repeat your password">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="college_name" class="form-label">College / University <span class="text-muted-2">(optional)</span></label>
+              <input type="text" class="form-control" id="college_name" name="college_name"
+                     maxlength="120" placeholder="e.g. IIT Delhi" value="{{ form_data.get('college_name', '') }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+              <i class="bi bi-rocket-takeoff me-2"></i>Create account
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

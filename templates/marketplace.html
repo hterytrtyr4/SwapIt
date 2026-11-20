@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% from 'partials/item_card.html' import item_card %}
+
+{% block title %}Marketplace - SwapIt{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <div class="row align-items-end g-3">
+      <div class="col-lg-7">
+        <p class="section-eyebrow mb-1">Marketplace</p>
+        <h1 class="h2 mb-2">Find your next swap</h1>
+        <p class="text-muted-2 mb-0">
+          Browse items other members are offering. Every listing is a trade waiting to happen.
+        </p>
+      </div>
+      <div class="col-lg-5 text-lg-end">
+        <span class="badge-soft badge-accepted fs-13 py-2 px-3">
+          <i class="bi bi-collection"></i>{{ items|length }} listing{% if items|length != 1 %}s{% endif %} found
+          {% if q %} for "{{ q }}"{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <!-- filter bar -->
+  <form class="filter-bar mb-4" method="get" action="{{ url_for('marketplace.marketplace') }}" id="filterForm">
+    <div class="row g-2 g-lg-3 align-items-center">
+      <div class="col-12 col-lg-5">
+        <div class="search-field">
+          <i class="bi bi-search"></i>
+          <label for="q" class="visually-hidden">Search items</label>
+          <input type="search" class="form-control" id="q" name="q" value="{{ q }}"
+                 placeholder="Search calculators, books, rackets..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <label for="category" class="visually-hidden">Category</label>
+        <select class="form-select" id="category" name="category">
+          <option value="">All categories</option>
+          {% for c in categories %}
+          <option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <label for="sort" class="visually-hidden">Sort by</label>
+        <select class="form-select" id="sort" name="sort">
+          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest first</option>
+          <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest first</option>
+          <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A-Z</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-lg-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">
+          <i class="bi bi-funnel me-1"></i>Apply
+        </button>
+        {% if q or category or sort != 'newest' %}
+        <a href="{{ url_for('marketplace.marketplace') }}" class="btn btn-ghost">Clear</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="chip-row mt-3">
+      <a class="filter-chip {% if not category %}active{% endif %}"
+         href="{{ url_for('marketplace.marketplace', q=q, sort=sort) }}">All categories</a>
+      {% for c in categories %}
+      <a class="filter-chip {% if category == c %}active{% endif %}"
+         href="{{ url_for('marketplace.marketplace', q=q, category=c, sort=sort) }}">{{ c }}</a>
+      {% endfor %}
+    </div>
+  </form>
+
+  {% if items %}
+  <div class="row g-4">
+    {% for item in items %}
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      {{ item_card(item, current_user) }}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon"><i class="bi bi-search"></i></div>
+    <h5>No items match your filters</h5>
+    <p>Try a different search term or clear the category filter. New items are listed every day.</p>
+    <a href="{{ url_for('marketplace.marketplace') }}" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-counterclockwise me-2"></i>Clear filters
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

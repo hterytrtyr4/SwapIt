@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - SwapIt{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <p class="section-eyebrow mb-1">Account</p>
+    <h1 class="h2 mb-2">My Profile</h1>
+    <p class="text-muted-2 mb-0">Manage your account details and password.</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4">
+    <!-- Profile card -->
+    <div class="col-lg-4">
+      <div class="profile-card">
+        <span class="avatar xl avatar-soft mx-auto mb-3">{{ current_user.initials }}</span>
+        <h4 class="fw-bold mb-1">{{ current_user.name }}</h4>
+        <p class="text-muted-2 mb-1">{{ current_user.email }}</p>
+        {% if current_user.college_name %}
+        <p class="text-muted-2 mb-1"><i class="bi bi-mortarboard me-1"></i>{{ current_user.college_name }}</p>
+        {% else %}
+        <p class="text-muted-2 mb-1"><i class="bi bi-mortarboard me-1"></i>No college added</p>
+        {% endif %}
+        <p class="text-muted-2 mb-3 fs-14">
+          <i class="bi bi-calendar3 me-1"></i>Member since {{ current_user.created_at.strftime('%b %Y') }}
+        </p>
+        <div class="row g-2 mt-2">
+          <div class="col-6">
+            <div class="profile-stat">
+              <div class="num">{{ total_items }}</div>
+              <div class="text-muted-2 fs-14">Items listed</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="profile-stat">
+              <div class="num">{{ completed_swaps }}</div>
+              <div class="text-muted-2 fs-14">Swaps completed</div>
+            </div>
+          </div>
+        </div>
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-soft w-100 mt-4">
+          <i class="bi bi-speedometer2 me-2"></i>Back to dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Edit form -->
+    <div class="col-lg-8">
+      <div class="form-card">
+        <p class="section-eyebrow mb-4"><i class="bi bi-pencil-square me-1"></i>Edit profile</p>
+        <form method="POST" action="{{ url_for('dashboard.profile') }}" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Full name</label>
+              <input type="text" class="form-control" id="name" name="name"
+                     required minlength="2" maxlength="100" value="{{ current_user.name }}">
+            </div>
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email" name="email"
+                     required value="{{ current_user.email }}">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="college_name" class="form-label">College / University <span class="text-muted-2">(optional)</span></label>
+            <input type="text" class="form-control" id="college_name" name="college_name"
+                   maxlength="120" value="{{ current_user.college_name or '' }}">
+          </div>
+
+          <hr style="border-color: var(--line);">
+          <p class="section-eyebrow mb-3"><i class="bi bi-shield-lock me-1"></i>Change password</p>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="current_password" class="form-label">Current password</label>
+              <input type="password" class="form-control" id="current_password"
+                     name="current_password" placeholder="Required to change">
+            </div>
+            <div class="col-md-4">
+              <label for="new_password" class="form-label">New password</label>
+              <input type="password" class="form-control" id="new_password"
+                     name="new_password" minlength="8" placeholder="At least 8 characters">
+            </div>
+            <div class="col-md-4">
+              <label for="confirm_password" class="form-label">Confirm new password</label>
+              <input type="password" class="form-control" id="confirm_password"
+                     name="confirm_password" placeholder="Repeat new password">
+            </div>
+          </div>
+          <div class="form-text mb-4">Leave all password fields empty to keep your current password.</div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle me-2"></i>Save changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

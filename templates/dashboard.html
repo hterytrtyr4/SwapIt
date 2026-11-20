@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% from 'partials/item_card.html' import item_card %}
+
+{% block title %}Dashboard - SwapIt{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+      <div>
+        <p class="section-eyebrow mb-1">Dashboard</p>
+        <h1 class="h2 mb-2">Welcome back, {{ current_user.name.split()[0] }}</h1>
+        <p class="text-muted-2 mb-0">Here's everything happening with your swaps.</p>
+      </div>
+      <a href="{{ url_for('items.add_item') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Add Item
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+
+  <!-- ============ Stats row ============ -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg">
+      <div class="stat-card">
+        <div class="stat-icon violet"><i class="bi bi-box-seam"></i></div>
+        <div>
+          <div class="stat-num">{{ stats.total_listings }}</div>
+          <div class="stat-lbl">Total listings</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-bag-check"></i></div>
+        <div>
+          <div class="stat-num">{{ stats.active_listings }}</div>
+          <div class="stat-lbl">Active listings</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div class="stat-num">{{ stats.pending }}</div>
+          <div class="stat-lbl">Pending requests</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-check2-circle"></i></div>
+        <div>
+          <div class="stat-num">{{ stats.accepted }}</div>
+          <div class="stat-lbl">Accepted swaps</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg">
+      <div class="stat-card">
+        <div class="stat-icon rose"><i class="bi bi-arrow-repeat"></i></div>
+        <div>
+          <div class="stat-num">{{ stats.completed }}</div>
+          <div class="stat-lbl">Completed swaps</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ My items ============ -->
+  <div class="dash-panel mb-4" id="my-items">
+    <div class="dash-head">
+      <h4><i class="bi bi-box-seam me-2" style="color: var(--brand);"></i>My Items</h4>
+      <div class="pill-group" role="group" aria-label="Filter items by status">
+        <a class="filter-chip {% if status_filter == 'all' %}active{% endif %}"
+           href="{{ url_for('dashboard.dashboard') }}#my-items">All</a>
+        {% for key, label in status_labels.items() %}
+        <a class="filter-chip {% if status_filter == key %}active{% endif %}"
+           href="{{ url_for('dashboard.dashboard', status=key) }}#my-items">{{ label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if filtered_items %}
+    <div class="row g-4">
+      {% for item in filtered_items %}
+      <div class="col-sm-6 col-lg-4">
+        {{ item_card(item, current_user) }}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2.25rem 1.25rem;">
+      <div class="icon"><i class="bi bi-inbox"></i></div>
+      <h6>No items here</h6>
+      <p class="mb-3">{% if status_filter != 'all' %}Nothing with this status right now.{% else %}List your first item to start receiving swap requests.{% endif %}</p>
+      <a href="{{ url_for('items.add_item') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Add Item
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ============ Incoming requests ============ -->
+  <div class="dash-panel mb-4" id="incoming">
+    <div class="dash-head">
+      <h4><i class="bi bi-envelope-arrow-down me-2" style="color: var(--brand);"></i>Incoming Swap Requests</h4>
+    </div>
+    {% if incoming %}
+    <div class="row g-3">
+      {% for swap in incoming %}
+      <div class="col-12">
+        <div class="request-card">
+          <div class="request-top">
+            <div class="d-flex align-items-center gap-3">
+              <span class="avatar avatar-soft">{{ swap.requester.initials }}</span>
+              <div>
+                <div class="fw-600">{{ swap.requester.name }}</div>
+                <div class="text-muted-2 fs-13">{{ swap.created_at.strftime('%b %d, %Y') }}</div>
+              </div>
+            </div>
+            <span class="badge-soft badge-{{ swap.status }}"><i class="bi bi-circle-fill" style="font-size:.55em;"></i>{{ swap.status_label }}</span>
+          </div>
+
+          <div class="request-swap">
+            <div class="request-item">
+              <img src="{{ swap.offered_item.image_url }}" alt="{{ swap.offered_item.title }}">
+              <div>
+                <div class="fw-600 fs-14 text-clamp-1">{{ swap.offered_item.title|truncate(30) }}</div>
+                <div class="text-muted-2 fs-13">They offer</div>
+              </div>
+            </div>
+            <i class="bi bi-arrow-left-right request-arrow"></i>
+            <div class="request-item">
+              <img src="{{ swap.requested_item.image_url }}" alt="{{ swap.requested_item.title }}">
+              <div>
+                <div class="fw-600 fs-14 text-clamp-1">{{ swap.requested_item.title|truncate(30) }}</div>
+                <div class="text-muted-2 fs-13">They want</div>
+              </div>
+            </div>
+          </div>
+
+          {% if swap.message %}
+          <div class="request-message"><i class="bi bi-chat-quote me-1"></i>"{{ swap.message }}"</div>
+          {% endif %}
+
+          {% if swap.status == 'pending' %}
+          <div class="request-actions">
+            <form method="POST" action="{{ url_for('swaps.accept', swap_id=swap.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-check2 me-1"></i>Accept</button>
+            </form>
+            <form method="POST" action="{{ url_for('swaps.reject', swap_id=swap.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-danger-soft btn-sm"><i class="bi bi-x me-1"></i>Reject</button>
+            </form>
+          </div>
+          {% elif swap.status == 'accepted' %}
+          <div class="request-actions">
+            <form method="POST" action="{{ url_for('swaps.complete', swap_id=swap.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-arrow-repeat me-1"></i>Mark as completed</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2.25rem 1.25rem;">
+      <div class="icon"><i class="bi bi-envelope"></i></div>
+      <h6>No incoming requests</h6>
+      <p class="mb-0">When someone requests one of your items, it will appear here.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ============ Sent requests ============ -->
+  <div class="dash-panel mb-4" id="sent">
+    <div class="dash-head">
+      <h4><i class="bi bi-send me-2" style="color: var(--brand);"></i>Sent Swap Requests</h4>
+    </div>
+    {% if sent %}
+    <div class="row g-3">
+      {% for swap in sent %}
+      <div class="col-12">
+        <div class="request-card">
+          <div class="request-top">
+            <div class="d-flex align-items-center gap-3">
+              <span class="avatar avatar-soft">{{ swap.receiver.initials }}</span>
+              <div>
+                <div class="fw-600">To: {{ swap.receiver.name }}</div>
+                <div class="text-muted-2 fs-13">{{ swap.created_at.strftime('%b %d, %Y') }}</div>
+              </div>
+            </div>
+            <span class="badge-soft badge-{{ swap.status }}"><i class="bi bi-circle-fill" style="font-size:.55em;"></i>{{ swap.status_label }}</span>
+          </div>
+
+          <div class="request-swap">
+            <div class="request-item">
+              <img src="{{ swap.offered_item.image_url }}" alt="{{ swap.offered_item.title }}">
+              <div>
+                <div class="fw-600 fs-14 text-clamp-1">{{ swap.offered_item.title|truncate(30) }}</div>
+                <div class="text-muted-2 fs-13">You offer</div>
+              </div>
+            </div>
+            <i class="bi bi-arrow-left-right request-arrow"></i>
+            <div class="request-item">
+              <img src="{{ swap.requested_item.image_url }}" alt="{{ swap.requested_item.title }}">
+              <div>
+                <div class="fw-600 fs-14 text-clamp-1">{{ swap.requested_item.title|truncate(30) }}</div>
+                <div class="text-muted-2 fs-13">You want</div>
+              </div>
+            </div>
+          </div>
+
+          {% if swap.message %}
+          <div class="request-message"><i class="bi bi-chat-quote me-1"></i>"{{ swap.message }}"</div>
+          {% endif %}
+
+          {% if swap.status == 'pending' %}
+          <div class="request-actions">
+            <form method="POST" action="{{ url_for('swaps.cancel', swap_id=swap.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-ghost btn-sm"><i class="bi bi-x-circle me-1"></i>Cancel request</button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2.25rem 1.25rem;">
+      <div class="icon"><i class="bi bi-send"></i></div>
+      <h6>No sent requests</h6>
+      <p class="mb-0">Find something you like in the marketplace and send your first swap request.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ============ Matches ============ -->
+  <div class="dash-panel mb-4" id="matches">
+    <div class="dash-head">
+      <h4><i class="bi bi-magic me-2" style="color: var(--brand);"></i>Suggested Matches</h4>
+      <a href="{{ url_for('dashboard.matches') }}" class="btn btn-soft btn-sm">
+        View all matches <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+    {% if matches %}
+    <div class="row g-3">
+      {% for m in matches[:4] %}
+      <div class="col-md-6">
+        <div class="mini-card">
+          <img src="{{ m.their_item.image_url }}" alt="{{ m.their_item.title }}">
+          <div class="flex-grow-1">
+            <div class="fw-600">{{ m.their_item.title|truncate(32) }}</div>
+            <div class="text-muted-2 fs-14">
+              {{ m.owner_name|truncate(16) }} · {{ m.score }}% match
+              <i class="bi bi-lightning-charge-fill ms-1" style="color: var(--brand);"></i>
+            </div>
+          </div>
+          <a href="{{ url_for('swaps.new_request', item_id=m.their_item.id) }}" class="btn btn-soft btn-sm">Swap</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2.25rem 1.25rem;">
+      <div class="icon"><i class="bi bi-stars"></i></div>
+      <h6>No matches yet</h6>
+      <p class="mb-0">List more items with clear wanted-descriptions to unlock smart matches.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ============ History ============ -->
+  <div class="dash-panel" id="history">
+    <div class="dash-head">
+      <h4><i class="bi bi-clock-history me-2" style="color: var(--brand);"></i>Swap History</h4>
+    </div>
+    {% if history %}
+    <div class="table-responsive">
+      <table class="table align-middle swap-table">
+        <thead>
+          <tr>
+            <th>Items</th>
+            <th>With</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for swap in history %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="fw-600">{{ swap.offered_item.title|truncate(22) }}</span>
+                <i class="bi bi-arrow-left-right" style="color: var(--brand);"></i>
+                <span class="fw-600">{{ swap.requested_item.title|truncate(22) }}</span>
+              </div>
+            </td>
+            <td class="text-muted-2">
+              {% if swap.requester_id == current_user.id %}{{ swap.receiver.name }}{% else %}{{ swap.requester.name }}{% endif %}
+            </td>
+            <td><span class="badge-soft badge-{{ swap.status }}"><i class="bi bi-circle-fill" style="font-size:.55em;"></i>{{ swap.status_label }}</span></td>
+            <td class="text-muted-2 fs-14">{{ swap.updated_at.strftime('%b %d, %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2.25rem 1.25rem;">
+      <div class="icon"><i class="bi bi-clock-history"></i></div>
+      <h6>No swap history yet</h6>
+      <p class="mb-0">Completed, rejected and cancelled swaps will be archived here.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
