@@ -17,6 +17,9 @@ instance/*.sqlite3
 static/uploads/*
 !static/uploads/.gitkeep
 
+# Uploads written by the test-suite
+tests/_uploads/
+
 # Test / tooling caches
 .pytest_cache/
 .coverage
